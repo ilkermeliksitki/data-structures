@@ -3,13 +3,18 @@
 #include <string.h>
 #define MAX_STACK_SIZE 100000
 
-char stack[MAX_STACK_SIZE];
+typedef struct{
+    char c;
+    int idx;
+} parenthesis;
+
+parenthesis stack[MAX_STACK_SIZE];
 int top_idx = -1;
 
-void push(char val);
-char pop();
+void push(int i, char val);
+parenthesis pop();
 bool is_empty();
-char peek();
+parenthesis peek();
 bool is_pair(char a, char b);
 int is_balanced(char *str);
 
@@ -31,9 +36,9 @@ int is_balanced(char *str)
 {
     for (int i = 0; i < strlen(str); ++i) {
         if (str[i] == '(' || str[i] == '[' || str[i] == '{') {
-            push(str[i]);
+            push(i, str[i]);
         } else if (str[i] == ')' || str[i] == ']' || str[i] == '}') {
-            if (is_pair(peek(), str[i])) {
+            if (is_pair(peek().c, str[i])) {
                 pop();
             } else {
                 return i + 1;
@@ -44,7 +49,8 @@ int is_balanced(char *str)
         return 0;
     }
     else {
-        return top_idx + 1;
+        /* if the stack is not empy, just return the index(1-based) of top element */
+        return peek().idx + 1;
     }
 }
 
@@ -61,27 +67,35 @@ bool is_pair(char a, char b)
         return false;
 }
 
-void push(char val)
+void push(int i, char val)
 {
     /* stack is full */
     if (top_idx == MAX_STACK_SIZE - 1)
         return;
-    stack[++top_idx] = val;
+    parenthesis p;
+    p.c = val;
+    p.idx = i;
+    stack[++top_idx] = p;
 }
 
-char peek()
+parenthesis peek()
 {
     if (top_idx == -1) {
-        return -1;
+        parenthesis p;
+        p.idx = -1;
+        return p;
     }
     return stack[top_idx];
 }
 
-char pop()
+parenthesis pop()
 {
     /* stack is empty */
-    if (top_idx == -1)
-        return -1;
+    if (top_idx == -1){
+        parenthesis p;
+        p.idx = -1;
+        return p;
+    }
     return stack[top_idx--];
 }
 
