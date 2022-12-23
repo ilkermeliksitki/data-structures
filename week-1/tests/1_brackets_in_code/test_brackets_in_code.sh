@@ -8,7 +8,7 @@ do
     #echo $result $test
     if [ "$result" != "$test" ]
     then
-        echo $i case failed.
+        echo the case $i failed.
         echo $(cat cases/$i)
     fi
 done
