@@ -28,14 +28,20 @@ void fill_node(struct node* nodes[], int n, int val, int pos)
                 printf("%s\n", "wrong format");
                 return;
             }
+            break;
         }
     }
 }
 
 
-int tree_height(struct node* nodes[], int n)
+int tree_height(struct node* root)
 {
-    return 99;
+    if (root == NULL) {
+        return 0;
+    }
+    int left_height = tree_height(root->left);
+    int right_height = tree_height(root->right);
+    return 1 + (left_height < right_height ? right_height : left_height);
 }
 
 int main(void)
@@ -48,14 +54,20 @@ int main(void)
         nodes[i] = create_node(i, NULL, NULL);
     }
 
-    int val;
+    int val, root_idx;
     for (int i = 0; i < n; i++){
         scanf("%d", &val);
+        if (val == -1) {
+            root_idx = i;
+            continue;
+        }
         fill_node(nodes, n, val, i);
     }
     
-    //int h = tree_height(nodes, n);
-    //printf("%d\n", h);
+    struct node* root_node;
+    root_node = nodes[root_idx];
+    int h = tree_height(root_node);
+    printf("%d\n", h);
 
     /* deallocate the allocated part of the heap */
     for (int i = 0; i < n; i++){
