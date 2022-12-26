@@ -14,5 +14,8 @@ do
         echo test result =\> $test
         printf "\n"
         break
+    else
+        echo passed $i
     fi
 done
+echo All test passed.
