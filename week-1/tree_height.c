@@ -40,6 +40,17 @@ int tree_height(struct node* root)
     return 1 + curr_height;
 }
 
+void free_nodes(struct node* n)
+{
+    for (int i = 0; i < n->num_children; i++){
+        free_nodes(n->children[i]);
+    }
+    /* deallocate children array */
+    free(n->children);
+    /* deallocate the node itself */
+    free(n);
+}
+
 int main(void)
 {
     int n;
@@ -83,10 +94,10 @@ int main(void)
     int h = tree_height(nodes[root_idx]);
     printf("%d\n", h);
 
-    /* deallocation of dynamically allocated structure nodes. */
-    for (int i = 0; i < n; i++){
-        free(nodes[i]);
-    }
-    
+    /*
+     * deallocation of dynamically allocated structure nodes, increase computation time
+     * a little bit.
+     */
+    free_nodes(nodes[root_idx]);
     return 0; 
 }
