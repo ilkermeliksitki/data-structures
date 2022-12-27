@@ -13,7 +13,7 @@ do
         echo your result =\> $result
         echo test result =\> $test
         printf "\n"
-        break
+        exit
     else
         echo passed $i
     fi
