@@ -17,16 +17,13 @@ struct node* create_node(int key, int num_children)
     return n;
 }
 
-void add_child(int parent_key, int child_key, struct node* nodes[])
+void add_child(int parent_key, int child_key, struct node* nodes[], int null_indexes[])
 {
     struct node* parent_node;
     parent_node = nodes[parent_key];
-    for (int i = 0; i < parent_node->num_children; i++){
-        if (parent_node->children[i] == NULL) {
-            parent_node->children[i] = nodes[child_key];
-            return;
-        }
-    }
+    int null_idx = null_indexes[parent_key];
+    parent_node->children[null_idx] = nodes[child_key];
+    null_indexes[parent_key]++;
 }
 
 int tree_height(struct node* root)
@@ -53,9 +50,11 @@ int main(void)
         scanf("%d", &keys[i]);
     }
 
+    int null_index_of_parents[n];
     int num_children_arr[n];
     for (int i = 0; i < n; i++){
         num_children_arr[i] = 0;
+        null_index_of_parents[i] = 0; 
     }
 
     int root_idx;
@@ -70,13 +69,12 @@ int main(void)
     for (int i = 0; i < n; i++){
         nodes[i] = create_node(i, num_children_arr[i]);
     }
-    clock_t start = clock();
     for (int i = 0; i < n; i++){
-        add_child(keys[i], i, nodes);
+        /* root node doesn't have a parent */
+        if (keys[i] == -1)
+            continue;
+        add_child(keys[i], i, nodes, null_index_of_parents);
     }
-    clock_t end = clock();
-    double elapsed_time = (double)(end - start) / CLOCKS_PER_SEC;
-    printf("Elapsed time: %f seconds\n", elapsed_time);
 
     int h = tree_height(nodes[root_idx]);
     printf("%d\n", h);
