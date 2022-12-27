@@ -18,14 +18,12 @@ struct node* create_node(int key, int num_children)
 
 void add_child(int parent_key, int child_key, struct node* nodes[], int n)
 {
-    for (int i = 0; i < n; i++){
-        if (nodes[i]->key == parent_key) {
-            for (int j = 0; j < nodes[i]->num_children; j++){
-                if (nodes[i]->children[j] == NULL){
-                    nodes[i]->children[j] = nodes[child_key];
-                    return;
-                }
-            }
+    struct node* parent_node;
+    parent_node = nodes[parent_key];
+    for (int i = 0; i < parent_node->num_children; i++){
+        if (parent_node->children[i] == NULL) {
+            parent_node->children[i] = nodes[child_key];
+            return;
         }
     }
 }
@@ -71,6 +69,7 @@ int main(void)
     for (int i = 0; i < n; i++){
         nodes[i] = create_node(i, num_children_arr[i]);
     }
+
     for (int i = 0; i < n; i++){
         add_child(keys[i], i, nodes, n);
     }
