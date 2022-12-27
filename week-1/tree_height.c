@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 struct node {
     int key;
@@ -16,7 +17,7 @@ struct node* create_node(int key, int num_children)
     return n;
 }
 
-void add_child(int parent_key, int child_key, struct node* nodes[], int n)
+void add_child(int parent_key, int child_key, struct node* nodes[])
 {
     struct node* parent_node;
     parent_node = nodes[parent_key];
@@ -69,10 +70,13 @@ int main(void)
     for (int i = 0; i < n; i++){
         nodes[i] = create_node(i, num_children_arr[i]);
     }
-
+    clock_t start = clock();
     for (int i = 0; i < n; i++){
-        add_child(keys[i], i, nodes, n);
+        add_child(keys[i], i, nodes);
     }
+    clock_t end = clock();
+    double elapsed_time = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Elapsed time: %f seconds\n", elapsed_time);
 
     int h = tree_height(nodes[root_idx]);
     printf("%d\n", h);
