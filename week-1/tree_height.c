@@ -49,6 +49,11 @@ int main(void)
         scanf("%d", &keys[i]);
     }
 
+    /*
+     * null_index_of_parents keeps track of available child location for adding.
+     * num_children_arr keeps track of the number of children of every node. Every
+     * node can have variable number of children.
+     */
     int null_index_of_parents[n];
     int num_children_arr[n];
     for (int i = 0; i < n; i++){
@@ -69,7 +74,7 @@ int main(void)
         nodes[i] = create_node(i, num_children_arr[i]);
     }
     for (int i = 0; i < n; i++){
-        /* root node doesn't have a parent */
+        /* root node doesn't have a parent, so it is skipped. */
         if (keys[i] == -1)
             continue;
         add_child(keys[i], i, nodes, null_index_of_parents);
@@ -78,7 +83,7 @@ int main(void)
     int h = tree_height(nodes[root_idx]);
     printf("%d\n", h);
 
-    /* deallocation part */
+    /* deallocation of dynamically allocated structure nodes. */
     for (int i = 0; i < n; i++){
         free(nodes[i]);
     }
