@@ -12,5 +12,9 @@ do
         echo your result =\> $result
         echo test result =\> $test
         printf "\n"
+        exit
+    else
+        echo passed $i
     fi
 done
+echo All test passed.
