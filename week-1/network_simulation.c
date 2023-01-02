@@ -21,12 +21,21 @@ void enqueue(struct queue *, struct packet);
 struct packet dequeue(struct queue *);
 bool is_empty(struct queue *);
 bool is_full(struct queue *);
+struct queue *create_queue(int);
+void free_memory(struct queue *);
 
 int main(void)
 {
     int S, n;
     scanf("%d %d", &S, &n);
+    struct queue *q = create_queue(S);
 
+    free_memory(q);
+    return 0;
+}
+
+struct queue *create_queue(int S)
+{
     /* create queue data structure 
      * +1 is for extra buffer for preventing read == write when there are still elements 
      */
@@ -36,13 +45,13 @@ int main(void)
     q->write = 0;
     q->size = S;
     q->buffer = buffer;
+    return q;
+}
 
-
-
-
+void free_memory(struct queue *q)
+{
+    free(q->buffer);
     free(q);
-    free(buffer);
-    return 0;
 }
 
 void enqueue(struct queue *q, struct packet val)
