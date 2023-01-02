@@ -7,17 +7,18 @@ struct queue {
     int read;
     int write;
     int size;
-    int *buffer;
+    struct packet *buffer;
 };
 
 struct packet {
     int arrival_time;
     int processing_time;
+    int error_val;
 };
 
 /* function prototypes */
-void enqueue(struct queue *, int);
-int dequeue(struct queue *);
+void enqueue(struct queue *, struct packet);
+struct packet dequeue(struct queue *);
 bool is_empty(struct queue *);
 bool is_full(struct queue *);
 
@@ -26,42 +27,30 @@ int main(void)
     int S, n;
     scanf("%d %d", &S, &n);
 
-    /*
-     * create queue data structure 
+    /* create queue data structure 
      * +1 is for extra buffer for preventing read == write when there are still elements 
      */
-    int *buffer = malloc(sizeof(int) * (S + 1));
+    struct packet *buffer = malloc(sizeof(struct packet) * (S + 1));
     struct queue *q = malloc(sizeof(struct queue));
     q->read = 0;
     q->write = 0;
     q->size = S;
     q->buffer = buffer;
 
-    enqueue(q, 1);
-    enqueue(q, 2);
-    printf("%b\n", is_empty(q));
-    enqueue(q, 3);
-    dequeue(q);
-    dequeue(q);
-    enqueue(q, 4);
-    enqueue(q, 5);
-    enqueue(q, 6);
-    enqueue(q, 7); //error
-    dequeue(q);
-    dequeue(q);
-    dequeue(q);
-    dequeue(q);
-    printf("%b\n", is_empty(q));
-    
-    
+
+
 
     free(q);
     free(buffer);
     return 0;
 }
 
-void enqueue(struct queue *q, int val)
+void enqueue(struct queue *q, struct packet val)
 {
+    /* enqueue function works by a circular fashion.
+     * after getting the limit of allocated array, the index wraps around and starts
+     * from 0, if there is enough space for adding a new element to queue.
+     */
     if (is_full(q)) {
         return;
     }
@@ -74,11 +63,13 @@ void enqueue(struct queue *q, int val)
     }
 }
 
-int dequeue(struct queue *q) {
+struct packet dequeue(struct queue *q) {
     if (is_empty(q)) {
-        return -1;
+        struct packet p;
+        p.error_val = -1;
+        return p;
     }
-    int r = q->buffer[q->read];
+    struct packet r = q->buffer[q->read];
     if (q->read == q->size) {
         q->read = 0;
     } else {
@@ -97,6 +88,9 @@ bool is_empty(struct queue *q)
 
 bool is_full(struct queue *q)
 {
+    /* is_full function checks the number of elements by using write and read index.
+     * if number of elements is equal to queue limit, it returs true, and vice versa.
+     */
     int num_elements = 0;
     if (q->write > q->read) {
         num_elements = q->write - q->read;
