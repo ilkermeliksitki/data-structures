@@ -23,15 +23,31 @@ bool is_empty(struct queue *);
 bool is_full(struct queue *);
 struct queue *create_queue(int);
 void free_memory(struct queue *);
+void fill_packets_array(struct packet[], int);
 
 int main(void)
 {
     int S, n;
     scanf("%d %d", &S, &n);
+
+    struct packet packets[n];
+    fill_packets_array(packets, n);
+
     struct queue *q = create_queue(S);
+
 
     free_memory(q);
     return 0;
+}
+
+void fill_packets_array(struct packet packets[], int n)
+{
+    for (int i = 0; i < n; ++i) {
+        struct packet p;
+        p.error_val = 0;
+        scanf("%d %d", &(p.arrival_time), &(p.processing_time));
+        packets[i] = p;
+    }
 }
 
 struct queue *create_queue(int S)
