@@ -29,13 +29,15 @@ int main(void)
 {
     int S, n;
     scanf("%d %d", &S, &n);
+    if (n == 0){
+        /* no network packets received */
+        return 1;
+    }
 
     struct packet packets[n];
     fill_packets_array(packets, n);
 
     struct queue *q = create_queue(S);
-
-
     free_memory(q);
     return 0;
 }
