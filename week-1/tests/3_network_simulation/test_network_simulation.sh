@@ -1,7 +1,7 @@
 #!/bin/bash
 
 gcc -g -pipe -O0 -std=c11 ../../../week-1/network_simulation.c -lm &&
-for i in {01..22}
+for i in {00..22}
 do
     result=$(cat cases/$i | ./a.out)
     test=$(cat cases/$i.a)
