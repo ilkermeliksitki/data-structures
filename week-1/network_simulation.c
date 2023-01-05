@@ -1,131 +1,93 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 
-/* structure definitions */
-struct queue {
-    int read;
-    int write;
-    int size;
-    struct packet *buffer;
-};
+#define MAX_BUFFER_SIZE 100000
 
-struct packet {
-    int arrival_time;
-    int processing_time;
-    int error_val;
-};
+typedef struct {
+    int arrived_at;
+    int time_to_process;
+} Request;
 
-/* function prototypes */
-void enqueue(struct queue *, struct packet);
-struct packet dequeue(struct queue *);
-bool is_empty(struct queue *);
-bool is_full(struct queue *);
-struct queue *create_queue(int);
-void free_memory(struct queue *);
-void fill_packets_array(struct packet[], int);
+typedef struct {
+    bool was_dropped;
+    int readed_at;
+} Response;
 
-int main(void)
-{
+/* the buffer is implemented by considering queue data structure
+ * (fixed loop-based array implementation)
+ */
+typedef struct {
+    int read;                          // the read index of buffer structure
+    int write;                         // the next available position of the new element.
+    int size;                          // size of the buffer.
+    int finish_time[MAX_BUFFER_SIZE];  // the time that the request finished being processed.
+} Buffer;
+
+void init_buffer(Buffer* buffer, int size) {
+    buffer->size = size;
+    buffer->read = 0;
+    buffer->write = 0;
+}
+
+Response process(Buffer* buffer, Request* request) {
+    Response response;
+    /* 
+     * this while loop removes the processed and finished requests from the buffer if it is not empty
+     * by incrementing the read index by one.
+     */
+    while (buffer->read != buffer->write && buffer->finish_time[buffer->read] <= request->arrived_at) {
+        /* % MAX_BUFFER_SIZE sends the read index to the beginning if it exceed the the size of the buffer */
+        buffer->read = (buffer->read + 1) % MAX_BUFFER_SIZE;
+    }
+    int packets_in_buffer = (buffer->write - buffer->read + MAX_BUFFER_SIZE) % MAX_BUFFER_SIZE;
+    if (packets_in_buffer == buffer->size) {
+        response.was_dropped = true;
+        response.readed_at = -1;
+    } else {
+        /* 
+         * if there is no packet, process the request immediately at arrived time
+         * else, the request should wait until the previous request is finished
+         * so in this case, readed_at time is equal to previous request's finish_time. 
+         */
+        response.was_dropped = false;
+        if (packets_in_buffer == 0) {
+            response.readed_at = request->arrived_at;
+        } else {
+            response.readed_at = buffer->finish_time[(buffer->write - 1 + MAX_BUFFER_SIZE) % MAX_BUFFER_SIZE];
+        }
+        /*
+         * finish_time of the current request is the sum of the time that has been read
+         * plus the process time.
+         */
+        buffer->finish_time[buffer->write] = response.readed_at + request->time_to_process;
+        buffer->write = (buffer->write + 1) % MAX_BUFFER_SIZE;
+    }
+    return response;
+}
+
+void process_requests(Response* responses, Buffer* buffer, Request* requests, int n) {
+    for (int i = 0; i < n; i++) {
+        responses[i] = process(buffer, &requests[i]);
+    }
+}
+
+int main(int argc, char** argv) {
     int S, n;
     scanf("%d %d", &S, &n);
-    if (n == 0){
-        /* no network packets received */
-        return 1;
+
+    Request requests[n];
+    for (int i = 0; i < n; i++) {
+        scanf("%d %d", &requests[i].arrived_at, &requests[i].time_to_process);
     }
 
-    struct packet packets[n];
-    fill_packets_array(packets, n);
-
-    struct queue *q = create_queue(S);
-    free_memory(q);
+    Buffer buffer;
+    init_buffer(&buffer, S);
+    Response responses[n];
+    process_requests(responses, &buffer, requests, n);
+    for (int i = 0; i < n; i++) {
+        printf("%d\n", (responses[i].was_dropped ? -1 : responses[i].readed_at));
+    }
+    
     return 0;
-}
-
-void fill_packets_array(struct packet packets[], int n)
-{
-    for (int i = 0; i < n; ++i) {
-        struct packet p;
-        p.error_val = 0;
-        scanf("%d %d", &(p.arrival_time), &(p.processing_time));
-        packets[i] = p;
-    }
-}
-
-struct queue *create_queue(int S)
-{
-    /* create queue data structure 
-     * +1 is for extra buffer for preventing read == write when there are still elements 
-     */
-    struct packet *buffer = malloc(sizeof(struct packet) * (S + 1));
-    struct queue *q = malloc(sizeof(struct queue));
-    q->read = 0;
-    q->write = 0;
-    q->size = S;
-    q->buffer = buffer;
-    return q;
-}
-
-void free_memory(struct queue *q)
-{
-    free(q->buffer);
-    free(q);
-}
-
-void enqueue(struct queue *q, struct packet val)
-{
-    /* enqueue function works by a circular fashion.
-     * after getting the limit of allocated array, the index wraps around and starts
-     * from 0, if there is enough space for adding a new element to queue.
-     */
-    if (is_full(q)) {
-        return;
-    }
-    q->buffer[q->write] = val;
-    if (q->write == q->size) {
-        q->write = 0; 
-    } 
-    else {
-        (q->write)++;
-    }
-}
-
-struct packet dequeue(struct queue *q) {
-    if (is_empty(q)) {
-        struct packet p;
-        p.error_val = -1;
-        return p;
-    }
-    struct packet r = q->buffer[q->read];
-    if (q->read == q->size) {
-        q->read = 0;
-    } else {
-        (q->read)++;
-    }
-    return r;
-}
-
-bool is_empty(struct queue *q)
-{
-    if (q->read == q->write) {
-        return true;
-    }
-    return false;
-}
-
-bool is_full(struct queue *q)
-{
-    /* is_full function checks the number of elements by using write and read index.
-     * if number of elements is equal to queue limit, it returs true, and vice versa.
-     */
-    int num_elements = 0;
-    if (q->write > q->read) {
-        num_elements = q->write - q->read;
-    } else if (q->write < q->read) {
-        num_elements = (q->write + q->size + 1) - q->read;
-    }
-    if (num_elements == q->size) {
-        return true;
-    }
-    return false;
 }
