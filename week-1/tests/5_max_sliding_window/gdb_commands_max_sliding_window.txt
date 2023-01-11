@@ -1,0 +1,12 @@
+break main
+break init_deque
+break is_empty
+break is_full
+break push_front
+break push_back
+
+define fn
+next
+print *d
+end
+
