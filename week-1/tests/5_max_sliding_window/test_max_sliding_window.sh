@@ -1,9 +1,9 @@
 #!/bin/bash
 
 gcc -g -pipe -O0 -std=c11 ../../../week-1/max_sliding_window.c -lm &&
-for i in {01..01}
+for i in {01..06}
 do
-    result=$(cat cases/$i | ./a.out)
+    result=$(cat cases/$i | ./a.out | xargs)
     test=$(cat cases/$i.a)
     if [ "$result" != "$test" ]
     then
