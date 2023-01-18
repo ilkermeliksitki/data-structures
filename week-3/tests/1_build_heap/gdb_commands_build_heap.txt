@@ -1,0 +1,8 @@
+break main
+break build_heap
+break sift_down
+
+define fn
+next
+print *h
+end
