@@ -39,6 +39,9 @@ int main(void)
 int get_parent(struct database *db, int table)
 {
     /* find parent and compress path */
+    if (table != db->parents[table]) {
+        db->parents[table] = get_parent(db, db->parents[table]);
+    }
     return db->parents[table];
 }
 
