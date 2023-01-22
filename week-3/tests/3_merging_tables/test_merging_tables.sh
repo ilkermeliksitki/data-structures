@@ -1,7 +1,7 @@
 #!/bin/bash
 
 gcc -g -pipe -O0 -std=c11 ../../../week-3/merging_tables.c -lm &&
-for i in {00..04}
+for i in {00..05}
 do
     result=$(cat cases/$i | ./a.out)
     test=$(cat cases/$i.a)
