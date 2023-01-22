@@ -53,9 +53,9 @@ int merge(struct database *db, int src, int dst)
         return 0;
     }
     /**
-     * merge two components
-     * use union by rank heuristic
-     * update max_row_count with the new maximum table size
+     * merging two tables, namely src and dst based on their parents' ranks.
+     * at the same time, the number of maximum now is also calculated after
+     * the merge operations.
      */
     if (db->ranks[src_parent] > db->ranks[dst_parent]) {
         /* dst_parent become the child of src_parent */
