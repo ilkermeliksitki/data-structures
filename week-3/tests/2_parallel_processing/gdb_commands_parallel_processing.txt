@@ -1,0 +1,6 @@
+break assign_jobs
+define fn
+print *next_free_time@n_workers
+n
+end
+run < tests/2_parallel_processing/cases/00
