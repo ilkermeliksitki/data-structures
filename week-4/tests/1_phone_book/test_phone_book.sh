@@ -1,7 +1,7 @@
 #!/bin/bash
 
 gcc -g -pipe -O0 -std=c11 ../../../week-4/phone_book.c -lm &&
-for i in {01..02}
+for i in {01..07}
 do
     result=$(cat cases/$i | ./a.out)
     test=$(cat cases/$i.a)
