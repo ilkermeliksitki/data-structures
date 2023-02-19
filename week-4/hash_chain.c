@@ -82,22 +82,36 @@ struct query *read_queries(void)
 
 void add(char *S)
 {
+    /* add a node to the chain along with the corresponding data. */
     int index = poly_hash(S);
     struct node *current = CHAINS[index];
+
+    /* if the first position of chain is empty */
     if (current->data == NULL) {
         current->data = malloc(sizeof(char) * (strlen(S) + 1));
         strcpy(current->data, S);
         return;
     }
+    /**
+     * if the first node is full, iterate through the chain until finding 
+     * a available location
+     */
     while (current->data != NULL ) {
+        /* if the data is in the current node, just do nothing */
         if (strcmp(current->data, S) == 0) {
             return;
         }
+        /* break the look if it is end of the chain */
         if (current->next == NULL) {
             break;
         }
         current = current->next;
     }
+    /**
+     * allocate memory for a new node and the data of the node,
+     * copy the string into the data part of the node
+     * arrange, the next and prev pointers appropriately
+     */
     struct node *new_node = malloc(sizeof(struct node));
     new_node->data = malloc(sizeof(char) * (strlen(S) + 1));
     strcpy(new_node->data, S);
