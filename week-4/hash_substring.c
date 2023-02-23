@@ -37,7 +37,7 @@ long long int *precomputed_hash(char *T, char *P)
         H[i] = (MULTIPLIER * H[i + 1] + T[i] - y * T[i + P_len]) % PRIME;
 
         /* if a value in H is negative, make it positive */
-        if (H[i] <= 0) {
+        if (H[i] < 0) {
             H[i] += PRIME;
         }
     }
