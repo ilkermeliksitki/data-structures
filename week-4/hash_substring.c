@@ -33,7 +33,7 @@ long long int *precomputed_hash(char *T, char *P)
         y = (y * MULTIPLIER) % PRIME;
     }
     for (int i = T_len - P_len - 1; i >= 0; i--) {
-        /* recursion equation for precomputing the hash values */
+        /* recursive equation for precomputing the hash values */
         H[i] = (MULTIPLIER * H[i + 1] + T[i] - y * T[i + P_len]) % PRIME;
 
         /* if a value in H is negative, make it positive */
