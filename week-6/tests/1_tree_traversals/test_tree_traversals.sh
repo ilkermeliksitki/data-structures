@@ -6,7 +6,6 @@ gcc -g -pipe -O0 -std=c11 ../../../week-6/tree_traversals.c -lm -o a.out
 # define an array of test case numbers
 test_cases=("01" "02" "03")
 
-
 # colors
 RED='\033[0;31m'
 RED_BOLD='\033[1;31m'
