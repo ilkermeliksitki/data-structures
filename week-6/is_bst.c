@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <limits.h>
 
-
 struct Node {
     int key;
     int left;
