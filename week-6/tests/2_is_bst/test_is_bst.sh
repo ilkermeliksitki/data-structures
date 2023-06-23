@@ -4,7 +4,7 @@
 gcc -g -pipe -O0 -std=c11 ../../../week-6/is_bst.c -lm -o a.out
 
 # define an array of test case numbers
-test_cases=("01" "02" "03" "04" "05" "06")
+test_cases=("01" "02" "03" "04" "05" "06" "07")
 
 # colors
 RED='\033[0;31m'
